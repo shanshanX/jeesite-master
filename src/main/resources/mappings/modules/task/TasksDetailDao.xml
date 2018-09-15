@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.task.dao.TasksDetailDao">
+
+	<sql id="tasksDetailColumns">
+		a.id AS "id",
+		a.task_id AS "taskId",
+		a.task_title AS "taskTitle",
+		a.user_id AS "userId",
+		a.user_name AS "userName",
+		a.phone AS "phone",
+		a.receive_user_id_recent AS "receiveUserIdRecent",
+		a.receive_user_name_recent AS "receiveUserNameRecent",
+		a.complete_flag AS "completeFlag",
+		a.give_up_flag AS "giveUpFlag",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+
+	<sql id="tasksDetailJoins">
+	</sql>
+
+	<select id="get" resultType="TasksDetail">
+		SELECT
+		<include refid="tasksDetailColumns"/>
+		FROM tasks_detail a
+		<include refid="tasksDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="TasksDetail">
+		SELECT
+		<include refid="tasksDetailColumns"/>
+		FROM tasks_detail a
+		<include refid="tasksDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="userName != null and userName != ''">
+				AND a.user_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{userName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{userName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{userName},'%')</if>
+			</if>
+			<if test="receiveUserNameRecent != null and receiveUserNameRecent != ''">
+				AND a.receive_user_name_recent LIKE
+				<if test="dbName == 'oracle'">'%'||#{receiveUserNameRecent}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{receiveUserNameRecent}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{receiveUserNameRecent},'%')</if>
+			</if>
+			<if test="receiveUserIdRecent != null and receiveUserIdRecent != ''">
+				AND a.receive_user_id_recent = #{receiveUserIdRecent}
+			</if>
+			<if test="giveUpFlag != null and giveUpFlag != ''">
+				AND a.give_up_flag = #{giveUpFlag}
+			</if>
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="TasksDetail">
+		SELECT
+		<include refid="tasksDetailColumns"/>
+		FROM tasks_detail a
+		<include refid="tasksDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO tasks_detail(
+			id,
+			task_id,
+			task_title,
+			user_id,
+			user_name,
+			phone,
+			receive_user_id_recent,
+			receive_user_name_recent,
+			complete_flag,
+			give_up_flag,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{taskId},
+			#{taskTitle},
+			#{userId},
+			#{userName},
+			#{phone},
+			#{receiveUserIdRecent},
+			#{receiveUserNameRecent},
+			#{completeFlag},
+			#{giveUpFlag},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE tasks_detail SET
+			task_id = #{taskId},
+			task_title = #{taskTitle},
+			user_id = #{userId},
+			user_name = #{userName},
+			phone = #{phone},
+			receive_user_id_recent = #{receiveUserIdRecent},
+			receive_user_name_recent = #{receiveUserNameRecent},
+			complete_flag = #{completeFlag},
+			give_up_flag = #{giveUpFlag},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE tasks_detail SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

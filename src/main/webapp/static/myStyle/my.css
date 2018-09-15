@@ -1,0 +1,20 @@
+.am-badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: .25em .625em;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    vertical-align: baseline;
+    white-space: nowrap;
+    text-align: center;
+    background-color: #dd514c;
+    border-radius: 0;
+}
+
+.pictureInfo {
+    width: 400px;
+    height: 300px;
+    border-radius: 30px;
+}

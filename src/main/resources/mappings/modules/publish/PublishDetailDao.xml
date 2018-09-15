@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.publish.dao.PublishDetailDao">
+    
+	<sql id="publishDetailColumns">
+		a.id AS "id",
+		a.title AS "title",
+		a.content AS "content",
+		a.picture AS "picture",
+		a.receive_user_id AS "receiveUserId",
+		a.receive_user_name AS "receiveUserName",
+		a.create_by_user_name AS "createByUserName",
+		a.review_flag AS "reviewFlag",
+		a.receive_flag AS "receiveFlag",
+		a.complete_flag AS "completeFlag",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="publishDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="PublishDetail">
+		SELECT 
+			<include refid="publishDetailColumns"/>
+		FROM publish_detail a
+		<include refid="publishDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PublishDetail">
+		SELECT 
+			<include refid="publishDetailColumns"/>
+		FROM publish_detail a
+		<include refid="publishDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="receiveUserName != null and receiveUserName != ''">
+				AND a.receive_user_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{receiveUserName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{receiveUserName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{receiveUserName},'%')</if>
+			</if>
+			<if test="createByUserName != null and createByUserName != ''">
+				AND a.create_by_user_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{createByUserName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{createByUserName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{createByUserName},'%')</if>
+			</if>
+			<if test="reviewFlag != null and reviewFlag != ''">
+				AND a.review_flag = #{reviewFlag}
+			</if>
+			<if test="receiveFlag != null and receiveFlag != ''">
+				AND a.receive_flag = #{receiveFlag}
+			</if>
+			<if test="createBy != null and createBy != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PublishDetail">
+		SELECT 
+			<include refid="publishDetailColumns"/>
+		FROM publish_detail a
+		<include refid="publishDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO publish_detail(
+			id,
+			title,
+			content,
+			picture,
+			receive_user_id,
+			receive_user_name,
+			create_by_user_name,
+			review_flag,
+			receive_flag,
+			complete_flag,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{title},
+			#{content},
+			#{picture},
+			#{receiveUserId},
+			#{receiveUserName},
+			#{createByUserName},
+			#{reviewFlag},
+			#{receiveFlag},
+			#{completeFlag},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE publish_detail SET 	
+			title = #{title},
+			content = #{content},
+			picture = #{picture},
+			receive_user_id = #{receiveUserId},
+			receive_user_name = #{receiveUserName},
+			create_by_user_name = #{createByUserName},
+			review_flag = #{reviewFlag},
+			receive_flag = #{receiveFlag},
+			complete_flag = #{completeFlag},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE publish_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
